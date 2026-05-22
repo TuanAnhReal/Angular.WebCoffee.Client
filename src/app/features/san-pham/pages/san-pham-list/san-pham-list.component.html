@@ -1,5 +1,147 @@
-<div class="p-6">
-  <h1 class="text-2xl font-bold">
-    Quản lý sản phẩm
-  </h1>
+<div class="max-w-[1600px] mx-auto pb-8">
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <nav class="flex text-on-surface-variant font-label-caps text-[10px] mb-1 uppercase tracking-widest">
+                <span>Sản phẩm</span>
+                <span class="mx-2">/</span>
+                <span class="text-primary font-bold">Tất cả sản phẩm</span>
+            </nav>
+            <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Danh sách sản phẩm</h2>
+        </div>
+        
+        <a
+        routerLink="/admin/san-pham/create"
+        class="flex items-center gap-2 bg-primary text-on-primary px-6 py-2.5 rounded hover:brightness-110 transition-all font-body-md font-semibold shadow-sm active:scale-95"
+        >
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Thêm sản phẩm mới
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+        <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant card-shadow">
+            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Tổng sản phẩm</p>
+            <div class="flex justify-between items-end">
+                <span class="text-3xl font-bold">1,240</span>
+                <span class="text-xs text-primary bg-primary-container bg-opacity-20 px-2 py-0.5 rounded">+12%</span>
+            </div>
+        </div>
+        <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant card-shadow">
+            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Đang kinh doanh</p>
+            <div class="flex justify-between items-end">
+                <span class="text-3xl font-bold">1,185</span>
+                <span class="material-symbols-outlined text-green-600">check_circle</span>
+            </div>
+        </div>
+        <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant card-shadow">
+            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Hết hàng</p>
+            <div class="flex justify-between items-end">
+                <span class="text-3xl font-bold">55</span>
+                <span class="text-xs text-error bg-error bg-opacity-10 px-2 py-0.5 rounded font-bold">Chú ý</span>
+            </div>
+        </div>
+        <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant card-shadow">
+            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Danh mục</p>
+            <div class="flex justify-between items-end">
+                <span class="text-3xl font-bold">18</span>
+                <span class="material-symbols-outlined text-on-surface-variant">category</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest p-4 rounded-t-xl border-x border-t border-outline-variant">
+        <div class="flex flex-wrap gap-4 items-center">
+            <div class="flex-1 min-w-[240px] relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+                <input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded font-body-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-surface-container-lowest text-on-surface" placeholder="Tìm tên sản phẩm hoặc SKU..." type="text"/>
+            </div>
+            <div class="flex gap-3">
+                <select class="px-4 py-2 border border-outline-variant rounded font-body-sm text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-transparent min-w-[140px] cursor-pointer">
+                    <option>Danh mục</option>
+                    <option>Cà phê</option>
+                    <option>Trà</option>
+                    <option>Bánh ngọt</option>
+                </select>
+                <select class="px-4 py-2 border border-outline-variant rounded font-body-sm text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-transparent min-w-[140px] cursor-pointer">
+                    <option>Trạng thái</option>
+                    <option>Còn hàng</option>
+                    <option>Hết hàng</option>
+                </select>
+                <button class="p-2 border border-outline-variant rounded hover:bg-surface-container-high transition-all text-on-surface-variant cursor-pointer">
+                    <span class="material-symbols-outlined">filter_list</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest border border-outline-variant shadow-sm overflow-x-auto">
+        <table class="w-full text-left border-collapse whitespace-nowrap">
+            <thead>
+                <tr class="bg-surface-container-low border-b border-outline-variant">
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant w-16">Hình ảnh</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Tên sản phẩm</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Mã SP</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Danh mục</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Giá</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Tồn kho</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant">Trạng thái</th>
+                    <th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant text-right">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant">
+                
+                <tr class="hover:bg-surface-container-low transition-colors group">
+                    <td class="px-4 py-3">
+                        <div class="w-12 h-12 rounded bg-surface-container-high border border-outline-variant overflow-hidden flex justify-center items-center">
+                            <span class="material-symbols-outlined text-on-surface-variant">local_cafe</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <p class="font-body-md text-body-md font-semibold text-on-surface">Cà phê sữa đá</p>
+                        <p class="text-[11px] text-on-surface-variant">Size M</p>
+                    </td>
+                    <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface-variant">CF-001</td>
+                    <td class="px-4 py-3">
+                        <span class="text-[12px] bg-primary-container bg-opacity-10 text-primary px-2 py-1 rounded font-semibold">Cà phê</span>
+                    </td>
+                    <td class="px-4 py-3 font-body-md text-body-md font-bold text-primary">29,000 ₫</td>
+                    <td class="px-4 py-3 font-body-md text-body-md">50</td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Còn hàng
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="p-1.5 hover:bg-primary-container hover:bg-opacity-20 text-primary rounded transition-all">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
+                            <button class="p-1.5 hover:bg-error hover:bg-opacity-10 text-error rounded transition-all">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bg-surface-container-lowest p-4 rounded-b-xl border-x border-b border-outline-variant flex justify-between items-center">
+        <p class="font-body-sm text-body-sm text-on-surface-variant">
+            Hiển thị <span class="font-semibold text-on-surface">1 - 10</span> trong số <span class="font-semibold text-on-surface">120</span> sản phẩm
+        </p>
+        <div class="flex items-center gap-1">
+            <button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-low transition-all text-on-surface-variant disabled:opacity-30" disabled>
+                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-semibold text-sm">1</button>
+            <button class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:border-outline-variant font-medium text-sm">2</button>
+            <button class="w-8 h-8 flex items-center justify-center rounded border border-transparent hover:border-outline-variant font-medium text-sm">3</button>
+            <span class="mx-1 text-on-surface-variant">...</span>
+            <button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-low transition-all text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+        </div>
+    </div>
 </div>
