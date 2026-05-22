@@ -1,0 +1,37 @@
+<div class="h-full flex flex-col py-gutter">
+  <div class="px-6 mb-8">
+    <h1 class="font-headline-md text-headline-md text-primary font-bold">WebCoffee</h1>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Admin Portal</p>
+  </div>
+  
+  <nav class="flex-grow space-y-1">
+    <a routerLink="/admin/dashboard" 
+       routerLinkActive="!bg-primary !text-on-primary" 
+       class="relative flex items-center px-6 py-3 transition-colors text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 active:scale-[0.98]">
+      <span class="material-symbols-outlined mr-3">dashboard</span>
+      <span class="font-body-md text-body-md font-medium">Dashboard</span>
+    </a>
+
+    <a routerLink="/admin/san-pham" 
+       routerLinkActive="!bg-primary !text-on-primary" 
+       class="flex items-center px-6 py-3 transition-colors text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 active:scale-[0.98]">
+      <span class="material-symbols-outlined mr-3">inventory_2</span>
+      <span class="font-body-md text-body-md font-medium">Sản phẩm</span>
+    </a>
+    
+    </nav>
+
+  <div class="px-6 mt-auto pt-4 border-t border-outline-variant">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold">
+        AD
+      </div>
+      <div>
+        <p class="font-body-sm text-body-sm font-semibold text-on-surface">Quản trị viên</p>
+        <p class="text-[11px] text-green-600 flex items-center gap-1">
+          <span class="w-2 h-2 bg-green-600 rounded-full"></span> Đang hoạt động
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
