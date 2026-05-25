@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   // =========================
-  // LOGIN
+  // AUTH
   // =========================
 
   login(
@@ -74,47 +74,62 @@ export class AuthService {
       )
       .pipe(
         tap((response) => {
-
-          console.log('LOGIN RESPONSE:', response);
-
           if (response.success && response.data) {
-
             this.tokenService.setTokens(
               response.data.token,
               response.data.refreshToken
             );
-
             this.restoreUserSession();
-
-            console.log(
-              'CURRENT USER:',
-              this.currentUser()
-            );
           }
         })
       );
   }
 
-  // =========================
-  // LOGOUT
-  // =========================
+  /**
+   * Gọi API thu hồi refresh token trên server.
+   * Backend đọc username từ Bearer token nên không cần truyền body.
+   */
+  revoke(): Observable<ApiResponse<null>> {
+    return this.apiService.post<ApiResponse<null>>(
+      '/auth/revoke',
+      {}
+    );
+  }
 
-  logout(): void {
-
+  /**
+   * Xoá toàn bộ session cục bộ (token + signal user).
+   * Dùng chung cho cả logout thường và sau khi revoke xong.
+   */
+  clearSession(): void {
     this.tokenService.removeTokens();
-
     this.currentUser.set(null);
+  }
 
-    this.router.navigate(['/login']);
+  /**
+   * Đăng xuất đầy đủ:
+   * 1. Gọi API revoke để thu hồi refresh token trên server
+   * 2. Dù thành công hay lỗi → luôn clear session local + redirect
+   */
+  logout(): void {
+    this.revoke().pipe(
+      catchError(() => {
+        // Token hết hạn hoặc server lỗi → vẫn tiếp tục đăng xuất
+        return [];
+      }),
+      finalize(() => {
+        this.clearSession();
+        this.router.navigate(['/login']);
+      })
+    ).subscribe();
   }
 
   // =========================
-  // RESTORE SESSION
+  // SESSION
   // =========================
 
   restoreUserSession(): void {
 
-    const token = this.tokenService.getAccessToken(); 
+    const token = this.tokenService.getAccessToken();
 
     if (!token) {
       this.currentUser.set(null);
@@ -123,63 +138,45 @@ export class AuthService {
 
     try {
 
-      const decoded =
-        jwtDecode<UserPayload>(token);
+      const decoded = jwtDecode<UserPayload>(token);
 
-      const isExpired =
-        decoded.exp * 1000 < Date.now();
+      const isExpired = decoded.exp * 1000 < Date.now();
 
       if (isExpired) {
-
-        this.logout();
+        this.clearSession(); // không gọi logout() để tránh gọi revoke lúc token đã expired
         return;
       }
 
       this.currentUser.set(decoded);
 
-    } catch (error) {
-
-      console.error(
-        'DECODE TOKEN ERROR',
-        error
-      );
-
-      this.logout();
+    } catch {
+      this.clearSession();
     }
   }
 
   // =========================
-  // REFRESH TOKEN
+  // TOKEN REFRESH
   // =========================
 
   refreshToken(): Observable<ApiResponse<LoginResponse>> {
 
-    const refreshToken =
-      this.tokenService.getRefreshToken();
+    const refreshToken = this.tokenService.getRefreshToken();
 
-    return this.apiService.post<
-      ApiResponse<LoginResponse>
-    >('/auth/refresh-token', {
-      refreshToken
-    }).pipe(
+    return this.apiService.post<ApiResponse<LoginResponse>>(
+      '/auth/refresh-token',
+      { refreshToken }
+    ).pipe(
       tap((response) => {
-
         if (response.success && response.data) {
-
           this.tokenService.setTokens(
             response.data.token,
             response.data.refreshToken
           );
-
           this.restoreUserSession();
         }
       })
     );
   }
-
-  // =========================
-  // HANDLE 401
-  // =========================
 
   handleRefreshToken(
     request: HttpRequest<any>,
@@ -196,23 +193,19 @@ export class AuthService {
 
       switchMap((response) => {
 
-        const newAccessToken =
-          response.data.token;
+        const newAccessToken = response.data.token;
 
-        const clonedRequest =
-          request.clone({
-            setHeaders: {
-              Authorization: `Bearer ${newAccessToken}`
-            }
-          });
+        const clonedRequest = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${newAccessToken}`
+          }
+        });
 
         return next(clonedRequest);
       }),
 
       catchError((error) => {
-
         this.logout();
-
         return throwError(() => error);
       }),
 
@@ -221,17 +214,20 @@ export class AuthService {
       })
     );
   }
-hasRole(role: string): boolean {
 
-  const user = this.currentUser();
+  // =========================
+  // ROLE
+  // =========================
 
-  if (!user) {
-    return false;
+  hasRole(role: string): boolean {
+
+    const user = this.currentUser();
+
+    if (!user) return false;
+
+    return (
+      user['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+      === role
+    );
   }
-
-  return (
-    user['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
-    === role
-  );
-}
 }

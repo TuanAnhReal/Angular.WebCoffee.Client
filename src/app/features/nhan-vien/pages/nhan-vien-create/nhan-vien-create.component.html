@@ -1,4 +1,4 @@
-<div class="pb-12">
+<form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="pb-12">
     <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
             <nav aria-label="Breadcrumb" class="flex text-on-surface-variant font-body-sm text-body-sm mb-2">
@@ -13,8 +13,10 @@
             <h2 class="font-headline-md text-headline-md font-bold">Hồ sơ nhân viên</h2>
         </div>
         <div class="flex gap-3 w-full sm:w-auto">
-            <button routerLink="/admin/nhan-vien" class="flex-1 sm:flex-none px-6 py-2 border border-outline text-on-surface-variant font-body-md text-body-md rounded hover:bg-surface-container-high transition-colors">Hủy bỏ</button>
-            <button class="flex-1 sm:flex-none px-6 py-2 bg-primary text-on-primary font-body-md text-body-md rounded hover:opacity-90 shadow-sm active:scale-95 transition-all">Lưu nhân viên</button>
+            <button type="button" routerLink="/admin/nhan-vien" class="flex-1 sm:flex-none px-6 py-2 border border-outline text-on-surface-variant font-body-md text-body-md rounded hover:bg-surface-container-high transition-colors">Hủy bỏ</button>
+            <button type="submit" [disabled]="isSubmitting" class="flex-1 sm:flex-none px-6 py-2 bg-primary text-on-primary font-body-md text-body-md rounded hover:opacity-90 shadow-sm active:scale-95 transition-all disabled:opacity-50">
+                {{ isSubmitting ? 'Đang lưu...' : 'Lưu nhân viên' }}
+            </button>
         </div>
     </div>
 
@@ -23,32 +25,37 @@
         <div class="lg:col-span-1 space-y-6">
             <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant">
                 <div class="flex flex-col items-center">
-                    <div class="relative group cursor-pointer">
+                    <div class="relative group cursor-pointer" (click)="fileInput.click()">
                         <div class="w-32 h-32 rounded-full border-4 border-surface-container-high flex items-center justify-center bg-surface-container transition-all overflow-hidden relative">
-                            <span class="material-symbols-outlined text-outline text-[48px]">person</span>
+                            @if (imagePreview) {
+                                <img [src]="imagePreview" class="w-full h-full object-cover">
+                            } @else {
+                                <span class="material-symbols-outlined text-outline text-[48px]">person</span>
+                            }
                             
                             <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
                             </div>
                         </div>
+                        <input #fileInput type="file" class="hidden" accept="image/*" (change)="onFileSelected($event)">
                     </div>
                     <h3 class="mt-4 font-title-sm text-title-sm font-bold">Ảnh đại diện</h3>
-                    <p class="text-on-surface-variant font-body-sm text-body-sm text-center mt-1">Dung lượng tối đa 2MB. Định dạng .jpg, .png</p>
+                    <p class="text-on-surface-variant font-body-sm text-body-sm text-center mt-1">Dung lượng tối đa 5MB. Định dạng .jpg, .png</p>
                 </div>
                 
                 <div class="mt-8 space-y-4">
                     <div>
                         <label class="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Trạng thái làm việc</label>
-                        <select class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary transition-all cursor-pointer outline-none">
-                            <option>Đang làm việc</option>
-                            <option>Thử việc</option>
-                            <option>Nghỉ phép</option>
-                            <option>Đã nghỉ việc</option>
+                        <select formControlName="trangThaiNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none">
+                            <option value="Đang làm">Đang làm việc</option>
+                            <option value="Thử việc">Thử việc</option>
+                            <option value="Tạm nghỉ">Nghỉ phép</option>
+                            <option value="Đã nghỉ">Đã nghỉ việc</option>
                         </select>
                     </div>
                     <div>
                         <label class="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Ghi chú nhanh</label>
-                        <textarea class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md resize-none focus:ring-1 focus:ring-primary focus:border-primary transition-all outline-none" placeholder="Nhập ghi chú đặc biệt về nhân viên..." rows="4"></textarea>
+                        <textarea formControlName="ghiChuNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md resize-none focus:ring-1 focus:ring-primary outline-none" rows="4"></textarea>
                     </div>
                 </div>
             </div>
@@ -63,49 +70,45 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="col-span-1">
-                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1 focus-within:text-primary transition-colors">Họ & Tên lót</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="VD: Nguyễn Văn" type="text"/>
+                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Họ & Tên lót *</label>
+                        <input formControlName="hoNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1">
-                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Tên</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="VD: Anh" type="text"/>
+                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Tên *</label>
+                        <input formControlName="tenNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Giới tính</label>
                         <div class="flex gap-4 mt-2">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input class="text-primary focus:ring-primary w-4 h-4 cursor-pointer" name="gender" type="radio" checked/>
+                                <input formControlName="phaiNV" value="True" class="text-primary w-4 h-4 cursor-pointer" type="radio"/>
                                 <span class="font-body-md text-body-md">Nam</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input class="text-primary focus:ring-primary w-4 h-4 cursor-pointer" name="gender" type="radio"/>
+                                <input formControlName="phaiNV" value="False" class="text-primary w-4 h-4 cursor-pointer" type="radio"/>
                                 <span class="font-body-md text-body-md">Nữ</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input class="text-primary focus:ring-primary w-4 h-4 cursor-pointer" name="gender" type="radio"/>
-                                <span class="font-body-md text-body-md">Khác</span>
                             </label>
                         </div>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Ngày sinh</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer" type="date"/>
+                        <input formControlName="ngaySinhNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none cursor-pointer" type="date"/>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số điện thoại</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="0xxx xxx xxx" type="tel"/>
+                        <input formControlName="soDTNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="tel"/>
                     </div>
                     <div class="col-span-1">
-                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số CCCD / Hộ chiếu</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Nhập 12 số" type="text"/>
+                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số CCCD</label>
+                        <input formControlName="soCCCD" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1 sm:col-span-2">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Địa chỉ thường trú</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Số nhà, tên đường, phường/xã, quận/huyện..." type="text"/>
+                        <input formControlName="diaChiNV_TT" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1 sm:col-span-2">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Địa chỉ tạm trú</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Để trống nếu giống địa chỉ thường trú" type="text"/>
+                        <input formControlName="diaChiNV_NT" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                 </div>
             </div>
@@ -117,23 +120,21 @@
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="col-span-1">
-                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Loại nhân viên</label>
-                        <select class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none cursor-pointer">
-                            <option disabled selected>Chọn loại nhân viên</option>
-                            <option>Toàn thời gian (Full-time)</option>
-                            <option>Bán thời gian (Part-time)</option>
-                            <option>Thời vụ</option>
-                            <option>Thực tập sinh</option>
+                        <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Chức vụ *</label>
+                        <select formControlName="maLoaiNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+                            <option value="">-- Chọn chức vụ --</option>
+                            @for (cat of categories; track cat.maLoaiNV) {
+                                <option [value]="cat.maLoaiNV">{{ cat.tenLoaiNV }}</option>
+                            }
                         </select>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Trình độ học vấn</label>
-                        <select class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none cursor-pointer">
-                            <option>Đại học</option>
-                            <option>Cao đẳng</option>
-                            <option>Trung cấp</option>
-                            <option>Phổ thông trung học</option>
-                            <option>Sau đại học</option>
+                        <select formControlName="trinhDoHV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+                            <option value="Đại học">Đại học</option>
+                            <option value="Cao đẳng">Cao đẳng</option>
+                            <option value="Trung cấp">Trung cấp</option>
+                            <option value="Phổ thông trung học">Phổ thông trung học</option>
                         </select>
                     </div>
                 </div>
@@ -147,34 +148,34 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số tài khoản ngân hàng</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="VD: 0123456789" type="text"/>
+                        <input formControlName="soTKNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Tên ngân hàng</label>
-                        <select class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none cursor-pointer">
-                            <option disabled selected>Chọn ngân hàng</option>
-                            <option>Vietcombank</option>
-                            <option>Techcombank</option>
-                            <option>MB Bank</option>
-                            <option>TP Bank</option>
-                            <option>ACB</option>
+                        <select formControlName="tenNgHNV" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+                            <option value="">Chọn ngân hàng</option>
+                            <option value="Vietcombank">Vietcombank</option>
+                            <option value="Techcombank">Techcombank</option>
+                            <option value="MB Bank">MB Bank</option>
+                            <option value="TP Bank">TP Bank</option>
+                            <option value="ACB">ACB</option>
                         </select>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số thẻ BHYT</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="VD: GD479152" type="text"/>
+                        <input formControlName="soBHYT" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                     <div class="col-span-1">
                         <label class="block font-body-sm text-body-sm text-on-surface-variant mb-1">Số sổ BHXH</label>
-                        <input class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="VD: 0116254789" type="text"/>
+                        <input formControlName="soBHXH" class="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-1 focus:ring-primary outline-none" type="text"/>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-                <button routerLink="/admin/nhan-vien" class="px-8 py-3 border border-outline text-on-surface-variant font-body-md text-body-md rounded-lg hover:bg-surface-container-high transition-colors">Hủy bỏ</button>
-                <button class="px-8 py-3 bg-primary text-on-primary font-body-md text-body-md rounded-lg hover:brightness-110 shadow-md active:scale-95 transition-all">Lưu nhân viên</button>
+                <button type="button" routerLink="/admin/nhan-vien" class="px-8 py-3 border border-outline text-on-surface-variant font-body-md text-body-md rounded-lg hover:bg-surface-container-high transition-colors">Hủy bỏ</button>
+                <button type="submit" [disabled]="isSubmitting" class="px-8 py-3 bg-primary text-on-primary font-body-md text-body-md rounded-lg hover:brightness-110 shadow-md active:scale-95 transition-all disabled:opacity-50">Lưu nhân viên</button>
             </div>
         </div>
     </div>
-</div>
+</form>

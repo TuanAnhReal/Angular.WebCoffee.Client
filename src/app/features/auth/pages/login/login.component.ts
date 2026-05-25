@@ -47,8 +47,6 @@ export class LoginComponent {
     .subscribe({
 
       next: () => {
-
-        // Delay 1 tick để tránh NG0100
         queueMicrotask(() => {
 
           this.isLoading = false;
