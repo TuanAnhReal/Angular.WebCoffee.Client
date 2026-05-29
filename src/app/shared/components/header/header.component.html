@@ -1,28 +1,29 @@
-<div class="flex justify-between items-center h-full px-6">
+<div class="flex justify-between items-center h-full px-6 bg-white">
 
-  <div class="relative group">
-    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+  <div class="relative w-60">
+    <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
     <input
-      class="w-64 pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm focus:ring-2 focus:ring-primary focus:w-80 transition-all duration-300 outline-none"
-      placeholder="Tìm kiếm..." type="text" />
+      class="w-full pl-8 pr-3 h-8 bg-slate-50 border border-slate-200/60 rounded-lg text-xs outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:bg-white transition-all duration-200"
+      placeholder="Tìm nhanh tác vụ..." type="text" />
   </div>
 
-  <div class="flex items-center gap-6">
+  <div class="flex items-center gap-4">
+    <button class="relative text-slate-400 hover:text-primary transition-colors cursor-pointer w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50">
+      <span class="material-symbols-outlined text-xl">notifications</span>
+      <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+    </button>
+
+    <div class="h-5 w-[1px] bg-slate-200"></div>
+
     <div class="flex items-center gap-4">
-      <button class="relative hover:text-primary cursor-pointer active:scale-95 transition-transform">
-        <span class="material-symbols-outlined text-outline">notifications</span>
-        <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
-      </button>
-    </div>
-
-    <div class="h-8 w-[1px] bg-outline-variant"></div>
-
-    <div class="flex items-center gap-8">
-      <app-avatar [name]="displayName" size="md" />
+      <a routerLink="/admin/profile" class="hover:opacity-80 transition-opacity flex items-center" title="Xem thông tin">
+        <app-avatar [name]="displayName" size="sm" />
+      </a>
 
       <button (click)="logout()"
-        class="flex items-center gap-2 bg-error text-on-error px-4 py-2 rounded-lg hover:bg-opacity-90 active:scale-95 transition-all font-body-sm font-semibold">
-        <span class="material-symbols-outlined text-[18px]">logout</span>
+        class="flex items-center justify-center w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-all cursor-pointer"
+        title="Đăng xuất hệ thống">
+        <span class="material-symbols-outlined text-md">logout</span>
       </button>
     </div>
   </div>

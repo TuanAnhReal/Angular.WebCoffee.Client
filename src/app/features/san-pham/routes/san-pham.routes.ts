@@ -12,5 +12,9 @@ export const SAN_PHAM_ROUTES: Routes = [
   {
     path: 'update/:id', 
     loadComponent: () => import('../pages/san-pham-update/san-pham-update.component').then(c => c.SanPhamUpdateComponent)
+  },
+  {
+    path: 'loai-sp',
+    loadComponent: () => import('../pages/loai-sp/loai-sp.component').then(m => m.LoaiSpComponent)
   }
 ];

@@ -13,6 +13,9 @@ export interface ApiResponse<T> {
 export interface LoaiSPVm {
     maLoaiSp: string;
     tenLoaiSp: string;
+    laHangDeVo: boolean; 
+    baoQuan: string;  
+    ghiChuLoaiSP: string;
 }
 
 export interface SanPhamVm {
@@ -59,4 +62,15 @@ export class SanPhamService {
     getById(maSp: string): Observable<ApiResponse<SanPhamVm>> {
         return this.http.get<ApiResponse<SanPhamVm>>(`${this.apiUrl}/${maSp}`);
     }
+  createCategory(data: any): Observable<any> {
+    return this.http.post<ApiResponse<any>>(this.loaiSpUrl, data);
+  }
+
+  updateCategory(id: string, data: any): Observable<any> {
+    return this.http.put<ApiResponse<any>>(`${this.loaiSpUrl}/${id}`, data);
+  }
+
+  deleteCategory(id: string | undefined): Observable<any> {
+    return this.http.delete<ApiResponse<any>>(`${this.loaiSpUrl}/${id}`);
+  }
 }

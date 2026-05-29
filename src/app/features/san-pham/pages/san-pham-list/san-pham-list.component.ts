@@ -19,6 +19,8 @@ export class SanPhamListComponent implements OnInit {
   paginatedProducts: SanPhamVm[] = [];
 
   isLoading = true;
+  // 👉 BỔ SUNG: Chế độ hiển thị mặc định là dạng bảng dẹt (compact)
+  viewMode: 'table' | 'grid' = 'table'; 
 
   totalProducts = 0;
   activeProducts = 0;
@@ -31,7 +33,7 @@ export class SanPhamListComponent implements OnInit {
   selectedStatus: string = '';
 
   currentPage = 1;
-  itemsPerPage = 5;
+  itemsPerPage = 8; // Tăng số lượng hiển thị trên mỗi trang đối với chế độ grid 4 cột cho cân đối
   totalPages = 1;
   math = Math; 
 
@@ -39,12 +41,18 @@ export class SanPhamListComponent implements OnInit {
     this.loadProducts();
   }
 
+  // 👉 BỔ SUNG: Hàm chuyển đổi ViewMode mượt mà
+  toggleView(mode: 'table' | 'grid'): void {
+    this.viewMode = mode;
+    this.cdr.detectChanges();
+  }
+
   loadProducts(): void {
     this.isLoading = true;
     this.sanPhamService.getAll().subscribe({
       next: (res) => {
         if (res.success) {
-          this.products = res.data; // Lấy mảng từ thuộc tính data
+          this.products = res.data;
           this.calculateStats();
           this.extractCategories();
           this.applyFilters();
@@ -55,6 +63,7 @@ export class SanPhamListComponent implements OnInit {
       error: (err) => {
         console.error('Lỗi khi tải danh sách sản phẩm', err);
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -117,7 +126,7 @@ export class SanPhamListComponent implements OnInit {
         next: (res) => {
           if (res.success) {
             alert('Đã xóa sản phẩm thành công!');
-            this.loadProducts(); // Tải lại danh sách sau khi xóa
+            this.loadProducts();
           }
         },
         error: (err) => {

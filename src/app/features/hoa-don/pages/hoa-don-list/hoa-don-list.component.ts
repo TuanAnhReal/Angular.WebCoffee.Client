@@ -18,8 +18,6 @@ export class HoaDonListComponent implements OnInit {
   filteredInvoices: HoaDonVm[] = [];
   paginatedInvoices: HoaDonVm[] = [];
 
-  isLoading = true;
-
   // Thống kê
   totalRevenueToday = 0;
   pendingInvoicesCount = 0;
@@ -32,7 +30,7 @@ export class HoaDonListComponent implements OnInit {
 
   // Phân trang
   currentPage = 1;
-  itemsPerPage = 5;
+  itemsPerPage = 10; // Tăng lên 10 dòng/trang theo chuẩn enterprise dashboard dẹt
   totalPages = 1;
   math = Math;
 
@@ -41,7 +39,6 @@ export class HoaDonListComponent implements OnInit {
   }
 
   loadInvoices(): void {
-    this.isLoading = true;
     this.hoaDonService.getAll().subscribe({
       next: (res) => {
         if (res.success) {
@@ -49,12 +46,10 @@ export class HoaDonListComponent implements OnInit {
           this.calculateStats();
           this.applyFilters();
         }
-        this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // Ép kích hoạt vòng đời render cập nhật UI ngay lập tức
       },
       error: (err) => {
-        console.error('Lỗi khi tải danh sách hóa đơn', err);
-        this.isLoading = false;
+        console.error('Lỗi khi tải danh sách hóa đơn:', err);
         this.cdr.detectChanges();
       }
     });
@@ -64,15 +59,15 @@ export class HoaDonListComponent implements OnInit {
     this.totalInvoicesCount = this.invoices.length;
     this.pendingInvoicesCount = this.invoices.filter(hd => hd.trangThaiHD === 'Chưa thanh toán').length;
 
-    // Tính doanh thu của HÔM NAY (dựa trên tgVao và trạng thái Đã thanh toán)
-    const today = new Date().toISOString().split('T')[0];
+    // Tính doanh thu của HÔM NAY (dựa trên tgVao và trạng thái Đã thanh toán) đúng múi giờ local
+    const today = new Date().toLocaleDateString('en-CA'); // Trả về dạng YYYY-MM-DD chính xác
     this.totalRevenueToday = this.invoices
-      .filter(hd => hd.tgVao.startsWith(today) && hd.trangThaiHD === 'Đã thanh toán')
+      .filter(hd => hd.tgVao && hd.tgVao.startsWith(today) && hd.trangThaiHD === 'Đã thanh toán')
       .reduce((sum, hd) => sum + hd.tongTien, 0);
   }
 
   getAvatarInitials(maKH: string): string {
-    if (!maKH || maKH.toLowerCase() === 'khách lẻ') return 'K';
+    if (!maKH || maKH.toLowerCase() === 'khách lẻ' || maKH.toLowerCase() === 'khách vãng lai') return 'K';
     return maKH.substring(0, 2).toUpperCase();
   }
 
@@ -87,7 +82,7 @@ export class HoaDonListComponent implements OnInit {
       const matchesStatus = this.selectedStatus === 'Tất cả' || hd.trangThaiHD === this.selectedStatus;
 
       // 3. Lọc theo ngày (so khớp phần YYYY-MM-DD của tgVao)
-      const matchesDate = !this.selectedDate || hd.tgVao.startsWith(this.selectedDate);
+      const matchesDate = !this.selectedDate || (hd.tgVao && hd.tgVao.startsWith(this.selectedDate));
 
       return matchesSearch && matchesStatus && matchesDate;
     });
